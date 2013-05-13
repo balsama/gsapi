@@ -4,7 +4,9 @@ function gsapi_admin() {
     '#title' => 'Type of call',
     '#type' => 'select',
     '#options' => array(
-      'foo' => 'foo',
+      'getClosestZipCode' => 'getClosestZipCode',
+      'getChainsByZip' => 'getChainsByZip',
+      'getPromotionsForSearchTerms' => 'getPromotionsForSearchTerms',
       'bar' => 'bar',
     ),
   );
@@ -18,5 +20,6 @@ function gsapi_admin() {
 }
 
 function gsapi_admin_submit($form, &$form_state) {
+  dpm(gsapi_request($form['gsapi_call']['#value']));
   //dpm($form);
 }

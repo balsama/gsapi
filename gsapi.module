@@ -31,8 +31,55 @@ function gsapi_perm() {
   return array('administer gs api');
 }
 
+/**
+ * Makes the request and returns the data
+ */
 function gsapi_request($service) {
   $result = '';
-  dpm($result);
-  return $result;
+  $details = gsapi_services_details($service);
+  $args = array();
+  foreach ($details['args'] as $key => $value) {
+    $args[] = $key . '=' . $value;
+  }
+  $args = implode('&', $args);
+  $args = '{"ChainByZipRequest":{"zipCode":"00544","categoryIdList":[],type:["coupon","special"],"rollupBy":"id","includeNearestStore":"true","radius":"15000"}}';
+  $args = '{"SearchRequest":{"searchTerms":["cheese"],"zipCode":"98110","maxResult":"10"}}';
+  $result = drupal_http_request($details['url'], array(), $details['method'], $args);
+  if ($result->code != 200) {
+    return $result->code;
+  }
+  else {
+    return json_decode($result->data);
+  }
+}
+
+/**
+ * Defines the API services
+ */
+function gsapi_services_details($requested) {
+  $service['getClosestZipCode'] = array(
+    'method' => 'GET',
+    'args' => array(
+      'ip' => ip_address(),
+    ),
+    'url' => 'http://uat.groceryserver.com/groceryserver/service/location/rest/v10/getClosestZipCode/clientId/ec535a5a74893077c4d1b111d7dbf82b/ipAddress/' . '70.60.50.40',
+  );
+
+  $service['getChainsByZip'] = array(
+    'method' => 'GET',
+    'args' => array(
+      'zipCode' => '02109',
+    ),
+    'url' => 'http://uat.groceryserver.com/groceryserver/service/grocery/rest/v10/clientId/ec535a5a74893077c4d1b111d7dbf82b/getChainsByZipCode/zipCode/02109',
+  );
+
+  $service['getPromotionsForSearchTerms'] = array(
+    'method' => 'POST',
+    'args' => array(
+      'zipCode' => '02109',
+    ),
+    'url' => 'http://uat.groceryserver.com/groceryserver/service/searchservice/rest/v10/clientId/ec535a5a74893077c4d1b111d7dbf82b/getPromotionsForSearchTerms',
+  );
+
+  return $service[$requested];
 }
