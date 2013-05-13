@@ -1,0 +1,38 @@
+<?php
+
+function gsapi_menu() {
+  $items['admin/settings/gsapi'] = array(
+    'title' => 'Grocery Server API',
+    'description' => 'Configure the GS API',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gsapi_admin'),
+    'access arguments' => array('administer gs api'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'includes/gsapi.admin.inc',
+  );
+  $items['admin/settings/gsapi/settings'] = array(
+    'title' => 'Grocery Server API',
+    'description' => 'Configure the GS API',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gsapi_admin'),
+    'access arguments' => array('administer gs api'),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'file' => 'includes/gsapi.admin.inc',
+    'weight' => 1,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_perm().
+ */
+function gsapi_perm() {
+  return array('administer gs api');
+}
+
+function gsapi_request($service) {
+  $result = '';
+  dpm($result);
+  return $result;
+}

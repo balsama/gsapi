@@ -1,0 +1,6 @@
+name = Grocery Server API
+description = Fetches data fromGrocery Server API
+core = 6.x
+
+package = GS API
+
