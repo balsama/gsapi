@@ -1,20 +1,20 @@
 <?php
+include('includes/gsapi.services.inc');
 
 function gsapi_menu() {
   $items['admin/settings/gsapi'] = array(
     'title' => 'Grocery Server API',
     'description' => 'Configure the GS API',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('gsapi_admin'),
+    'page callback' => 'gsapi_admin',
     'access arguments' => array('administer gs api'),
     'type' => MENU_NORMAL_ITEM,
     'file' => 'includes/gsapi.admin.inc',
   );
+
   $items['admin/settings/gsapi/settings'] = array(
     'title' => 'Grocery Server API',
     'description' => 'Configure the GS API',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('gsapi_admin'),
+    'page callback' => 'gsapi_admin',
     'access arguments' => array('administer gs api'),
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'file' => 'includes/gsapi.admin.inc',
@@ -34,16 +34,10 @@ function gsapi_perm() {
 /**
  * Makes the request and returns the data
  */
-function gsapi_request($service) {
-  $result = '';
-  $details = gsapi_services_details($service);
-  $args = array();
-  foreach ($details['args'] as $key => $value) {
-    $args[] = $key . '=' . $value;
-  }
-  $args = implode('&', $args);
-  $args = '{"ChainByZipRequest":{"zipCode":"00544","categoryIdList":[],type:["coupon","special"],"rollupBy":"id","includeNearestStore":"true","radius":"15000"}}';
-  $args = '{"SearchRequest":{"searchTerms":["cheese"],"zipCode":"98110","maxResult":"10"}}';
+function gsapi_request($service, $args = null) {
+  $args = explode(' ', $args);
+  $details = gsapi_services_details($service, $args);
+  $args = json_encode($details['args']);
   $result = drupal_http_request($details['url'], array(), $details['method'], $args);
   if ($result->code != 200) {
     return $result->code;
@@ -54,32 +48,111 @@ function gsapi_request($service) {
 }
 
 /**
- * Defines the API services
+ * Wrapper function for GS getClosestZipCode API call. Adds a leading zero if
+ * zip length is 4. Also stores the result in a cookie so we don't need to make
+ * repeated calls to the API.
+ *
+ * @return
+ *    Closest zip code based on IP.
  */
-function gsapi_services_details($requested) {
-  $service['getClosestZipCode'] = array(
-    'method' => 'GET',
-    'args' => array(
-      'ip' => ip_address(),
-    ),
-    'url' => 'http://uat.groceryserver.com/groceryserver/service/location/rest/v10/getClosestZipCode/clientId/ec535a5a74893077c4d1b111d7dbf82b/ipAddress/' . '70.60.50.40',
-  );
+function gsapi_zip() {
+  if (isset($_COOKIE['gsapi_zip'])) {
+    return $_COOKIE['gsapi_zip'];
+  }
+  $zip = gsapi_request('getClosestZipCode');
+  if (strlen($zip) == 4) {
+    $zip = '0' . $zip;
+  }
+  gsapi_update_zip($zip);
+  return $zip;
+}
 
-  $service['getChainsByZip'] = array(
-    'method' => 'GET',
-    'args' => array(
-      'zipCode' => '02109',
-    ),
-    'url' => 'http://uat.groceryserver.com/groceryserver/service/grocery/rest/v10/clientId/ec535a5a74893077c4d1b111d7dbf82b/getChainsByZipCode/zipCode/02109',
-  );
+function gsapi_update_zip($zip) {
+  return setcookie('gsapi_zip', $zip, time() + 3600 * 24 * 365, base_path());
+}
 
-  $service['getPromotionsForSearchTerms'] = array(
-    'method' => 'POST',
-    'args' => array(
-      'zipCode' => '02109',
-    ),
-    'url' => 'http://uat.groceryserver.com/groceryserver/service/searchservice/rest/v10/clientId/ec535a5a74893077c4d1b111d7dbf82b/getPromotionsForSearchTerms',
-  );
+/**
+ * Grocery Server API - Get Recipe Details
+ *
+ * Wrapper function for getting recipe details. Caches and returns values from
+ * the cache if available.
+ *
+ * @param string $recipe_id
+ *   Node ID of the recipe.
+ * @param bool $reset
+ *   If set to true, will pull data from the API even if it exists in the cache
+ *   and will update the cache.
+ *
+ * @return object
+ *   Object representing current offers for given recipe and zip
+ */
+function gsapi_grd($recipe_id, $reset = FALSE) {
+  $zip = gsapi_zip();
+  $data = cache_get('gsapi-grd-' . $recipe_id . '-' . $zip);
+  if ((!isset($data->data))||($reset)) {
+    $data = gsapi_request('getRecipeDetails', $recipe_id);
+    cache_set('gsapi-grd-' . $recipe_id . '-' . $zip, $data, 'cache', time() + 3600 * 24);
+  }
+  else {
+    $data = $data->data;
+  }
+  return $data;
+}
 
-  return $service[$requested];
+/**
+ * Grocery Server API - Get Recipe Promotion Count
+ *
+ * @return integer
+ *   Number of items within the given recipe for which there are promotions
+ *   in the users zip code
+ */
+function gsapi_grpc($recipe_id) {
+  $zip = gsapi_zip();
+  $data = gsapi_grd($recipe_id);
+  return $data->GetRecipesPromotionResponse->recipes[0]->promotionCount;
+}
+
+/**
+ * Universally Unique Ientifier.
+ *
+ * Generates and returns a UUID for an anon site visitor
+ */
+function gsapi_uuid() {
+  $uuid = $_COOKIE['gsapi_uuid'];
+  if (empty($uuid)) {
+    $uuid = user_password(16);
+    setcookie('gsapi_uuid', $uuid, 0, base_path());
+  }
+  return $uuid;
+}
+
+/**
+ * Duplicate of bootstrap.inc ip_address() but returns IPv4 version for
+ * localhost even if localhost (OS X MAMP) is configured for IPv6.
+ *
+ * @return
+ *   IP address of client machine adjusted for reverse proxy
+ */
+function gsapi_ip_address() {
+  static $ip_address = NULL;
+
+  if (!isset($ip_address)) {
+    $ip_address = $_SERVER['REMOTE_ADDR'];
+    if (variable_get('reverse_proxy', 0) && array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER)) {
+      // If an array of known reverse proxy IPs is provided, then trust
+      // the XFF header if request really comes from one of them.
+      $reverse_proxy_addresses = variable_get('reverse_proxy_addresses', array());
+      if (!empty($reverse_proxy_addresses) && in_array($ip_address, $reverse_proxy_addresses, TRUE)) {
+        // If there are several arguments, we need to check the most
+        // recently added one, i.e. the last one.
+        $ip_address_parts = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+        $ip_address = array_pop($ip_address_parts);
+      }
+    }
+  }
+  if ($ip_address == '::1') {
+    $ip_address = '127.0.0.1';
+  }
+
+  return $ip_address;
 }

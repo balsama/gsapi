@@ -1,0 +1,57 @@
+<?php
+/**
+ * Implements hook_block().
+ *
+ * Block provides a form which allows users to override the zip code detected
+ * by GS API.
+ */
+function gsapizip_block($op = 'list', $delta = 0, $edit = array()) {
+  if ($op == 'list') {
+    $block['gsapizip_block'] = array(
+      'info' => 'GSAPI Zip',
+    );
+    return $block;
+  }
+
+  elseif ($op == 'view') {
+    $block['content'] = drupal_get_form('gsapizip_form');
+    return $block;
+  }
+}
+
+/**
+ * Zip Code Form for the block.
+ */
+function gsapizip_form() {
+  $form['gsapizip_zip'] = array(
+    '#type' => 'textfield',
+    '#default_value' => gsapi_zip(),
+    '#size' => 5,
+    '#maxlength' => 5,
+    '#required' => TRUE,
+  );
+
+  $form['gsapizip_submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Submit',
+  );
+
+  return $form;
+}
+
+/**
+ * Validate that the zip is 5 digit numeric
+ */
+function gsapizip_form_validate($form, &$form_state) {
+  if (!preg_match('/^\d{5}$/', ($form['gsapizip_zip']['#value']))) {
+    form_error($form['gsapizip_zip'], t('Zip Code Field must contain a 5-digit numeric value'));
+  }
+}
+
+/**
+ * update the ZIP after validation passes (see gsapi.module for update zip
+ * function.
+ */
+function gsapizip_form_submit($form, &$form_state) {
+  gsapi_update_zip($form['gsapizip_zip']['#value']);
+}
