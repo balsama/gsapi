@@ -122,12 +122,12 @@ The wrappers fall into two categories:
   > Requires `rid` (Recipe ID) as `arg(3)`. Drupal Node ID of recipe.
 
 * `aip` (Add Item Promotion)
-  > Requires `pid` (Promotion ID) as `arg(3). GS internal ID of a promotion.  
+  > Requires `pid` (Promotion ID) as `arg(3).` GS internal ID of a promotion.  
   > **Note:** this functionality has a JS wrapper function
   > `gsapijs_sl_promotion(op, pid)` provided. See below.
 
 * `rip` (Remove Item Promotion)  
-  > Requires `pid` (Promotion ID) as `arg(3). GS internal ID of a promotion.
+  > Requires `pid` (Promotion ID) as `arg(3).` GS internal ID of a promotion.
   > **Note:** this functionality has a JS wrapper function
   > `gsapijs_sl_promotion(op, pid)` provided. See below.
 
@@ -140,7 +140,7 @@ The wrappers fall into two categories:
     gsapijs_sl_promotion(op, pid)
 
 *Param string op*
-> Either `aip` or `rip` (Add/Remove Item Promotion)
+> Either `aip` or `rip` (Add/Remove Item Promotion respectively)
 
 *Param int Promotion ID
 > The promotion ID returned from the Get Recipe Details call
