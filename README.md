@@ -1,9 +1,14 @@
-gsapi
-=====
+gsapi - Drupal Grocery Server API
+=================================
 
 Drupal wrapper for the Grocery Server API. This implementation requires that
 you provide Grocery Server with your recipes and that they have been imported
 into the Grocery Service API.
+
+Unless otherwise noted, all services return geo-targeted data automatically
+based on the results of the `gsapi_zip()` function. This explains why, for
+example, you don't need to provide a zip code argument to geo targeted API
+calls.
 
 Functions
 ---------
@@ -140,10 +145,10 @@ The wrappers fall into two categories:
     gsapijs_sl_promotion(op, pid)
 
 *Param string op*
-> Either `aip` or `rip` (Add/Remove Item Promotion respectively)
+> Either `aip` or `rip` (Add/Remove Item Promotion respectively).
 
-*Param int Promotion ID
-> The promotion ID returned from the Get Recipe Details call
+*Param int Promotion ID*
+> The promotion ID returned from the Get Recipe Details call.
 
 ###Additions to the `Drupal.settings` array###
 
@@ -152,3 +157,12 @@ The wrappers fall into two categories:
 The entire result of the Get Recipe Details call is available on recipe node
 pages via the above.
 
+##A note about Shopping Lists##
+Shopping lists are created per user as defined by the `gsapi_uuid` cookie. When
+needed, the `gsapi_uuid` is created and stored as a session cookie. Future
+calls to the API pertaining to shopping lists will use that UUID to udentify
+the ShoppingLlist that should be added to, removed from, or returned.
+
+As noted above, the shopping list cookie and perforce the Shopping List is not
+persistent throughout sessions. That is, if a user closes their browser, they
+will loose theie shopping list.
