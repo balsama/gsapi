@@ -32,7 +32,16 @@ function gsapi_perm() {
 }
 
 /**
- * Makes the request and returns the data
+ * Interacts directly with the GS API. See README for complete documentation.
+ *
+ * @param string $service
+ *   The GS API service to call
+ * @param mixed $args
+ *   Any additional arguments to pass with the request. E.g. Recipe ID or
+ *   Promotion ID.
+ *
+ * @return array
+ *   GS API Response on success. HTTP response on failure.
  */
 function gsapi_request($service, $args = null) {
   $args = explode(' ', $args);
@@ -104,7 +113,7 @@ function gsapi_grd($recipe_id, $reset = FALSE) {
  *
  * @return integer
  *   Number of items within the given recipe for which there are promotions
- *   in the users zip code
+ *   in the user's zip code.
  */
 function gsapi_grpc($recipe_id) {
   $zip = gsapi_zip();
@@ -115,7 +124,7 @@ function gsapi_grpc($recipe_id) {
 /**
  * Universally Unique Ientifier.
  *
- * Generates and returns a UUID for an anon site visitor
+ * Generates (if necesarry) and returns a UUID for an anon site visitor.
  */
 function gsapi_uuid() {
   $uuid = $_COOKIE['gsapi_uuid'];
@@ -127,7 +136,7 @@ function gsapi_uuid() {
 }
 
 /**
- * Clear the locally cached recipe details
+ * Clear the locally cached recipe details.
  */
 function gsapi_clear_rd_cache() {
   cache_clear_all('gsapi', 'cache', TRUE);

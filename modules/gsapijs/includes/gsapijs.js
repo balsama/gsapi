@@ -2,12 +2,12 @@
  * GS API Shopping List Promotion
  *
  * @param string op
- *   Operation - either add or remove represented as `aip` or `rip`
+ *   Operation - either add or remove represented as `aip` or `rip`.
  * @param int pid
- *   Promotion ID
+ *   Promotion ID.
  *
  * @return object
- *   Object representing users' current SHopping Cart after the Add or Remove
+ *   Object representing users' current Shopping Cart after the Add or Remove
  *   was completed.
  */
 function gsapijs_sl_promotion(op, pid) {
