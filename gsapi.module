@@ -127,6 +127,14 @@ function gsapi_uuid() {
 }
 
 /**
+ * Clear the locally cached recipe details
+ */
+function gsapi_clear_rd_cache() {
+  cache_clear_all('gsapi', 'cache', TRUE);
+  drupal_set_message('Locally stored Recipe Details have been deleted. They will be recreated the next time Recipe Details are requested.');
+}
+
+/**
  * Duplicate of bootstrap.inc ip_address() but returns IPv4 version for
  * localhost even if localhost (OS X MAMP) is configured for IPv6.
  *
