@@ -3,10 +3,10 @@
  * Defines the API services
  */
 function gsapi_services_details($requested, $args = null) {
-  $url_base = 'http://uat.groceryserver.com/groceryserver/service';
-  $api_version = 'v10';
-  $api_key = 'ec535a5a74893077c4d1b111d7dbf82b';
-  $client_id = 'clientId';
+  $url_base = variable_get('gsapi_form_url_base', 'http://uat.groceryserver.com/groceryserver/service');
+  $api_version = variable_get('gsapi_form_api_version', 'v10');
+  $api_key = variable_get('gsapi_form_api_key', '');
+  $client_id = variable_get('gsapi_form_client_id', 'clientId');
   switch ($requested) {
     case 'getClosestZipCode' :
       $url = array(
