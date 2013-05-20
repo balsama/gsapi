@@ -4,7 +4,7 @@ include('includes/gsapitest.admin.inc');
 
 function gsapitest_menu() {
   $items['admin/settings/gsapi/gsapi-test'] = array(
-    'title' => t('GS API HTTP Request Results'),
+    'title' => t('GS API Tests'),
     'page callback' => 'gsapitest_test',
     'access callback' => TRUE,
     'access arguments' => array('administer gs api'),
@@ -12,61 +12,11 @@ function gsapitest_menu() {
     'weight' => 2,
   );
 
-  $items['admin/settings/gsapi/gsapi-test/gsapi'] = array(
-    'title' => t('GS API Get Recipe Details - further processing'),
-    'page callback' => 'gsapitest_gsapi',
-    'access callback' => TRUE,
-    'access arguments' => array('administer gs api'),
-    'type' => MENU_NORMAL_ITEM,
-    'weight' => 2,
-  );
-
   return $items;
 }
 
+
+
 function gsapitest_test() {
-  return drupal_get_form('gsapitest_form');
-}
-
-function gsapitest_form() {
-  $form['gsapi_call'] = array(
-    '#title' => 'Type of call',
-    '#type' => 'select',
-    '#options' => array(
-      'getClosestZipCode' => 'getClosestZipCode',
-      'getChainsByZip' => 'getChainsByZip',
-      'getPromotionsForSearchTerms' => 'getPromotionsForSearchTerms',
-      'getPromotionCountForRecipe' => 'getPromotionCountForRecipe',
-      'getRecipeDetails' => 'getRecipeDetails',
-      'addItemPromotion' => 'addItemPromotion',
-    ),
-  );
-
-  $form['geapi_args'] = array(
-    '#title' => 'Arguments',
-    '#type' => 'textfield',
-    '#description' => 'Additional arguments to pass such as ingredients for getPromotionsForSearchTerms. Separate multiple arguments with a space',
-    '#default_value'=> '',
-  );
-
-  $form['gsapi_submit'] = array(
-    '#type' => 'submit',
-    '#value' => 'Submit',
-  );
-
-  return $form;
-}
-
-function gsapitest_form_validate($form, &$form_state) {
-  if (($form['gsapi_call']['#value'] == 'getPromotionsForSearchTerms') && ($form['geapi_args']['#value'] == '')) {
-    form_error($form['geapi_args'], 'getPromotionsForSearchTerms API call requires an argument.');
-  }
-}
-
-function gsapitest_form_submit($form, &$form_state) {
-  dpm(gsapi_request($form['gsapi_call']['#value'], $form['geapi_args']['#value']));
-}
-
-function gsapitest_gsapi() {
   return drupal_get_form('gsapitest_grd_form') . drupal_get_form('gsapitest_grpc_form') . drupal_get_form('gsapitest_aip_form') . drupal_get_form('gsapitest_rip_form') . drupal_get_form('gsapitest_gsl_form');
 }
