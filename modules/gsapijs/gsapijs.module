@@ -107,8 +107,8 @@ function gsapijs_convert() {
 function gsapijs_init() {
   if ((arg(0) == 'node') && (is_numeric(arg(1)))) {
     $node = menu_get_object();
-    if ($node->type == 'story') {
-      $recipe_details = gsapi_grd('1954');
+    if ($node->type == 'recipe') {
+      $recipe_details = gsapi_grd($node->nid);
       $recipe_details = $recipe_details->GetRecipesPromotionResponse->recipes[0];
       drupal_add_js(array('gsapijs' => array('recipe_details' => $recipe_details)), 'setting');
     }
