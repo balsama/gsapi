@@ -1,0 +1,7 @@
+name = Grocery Server API JS
+description = Provides a javascript wrapper to all php functions provided by this module.
+core = 6.x
+
+package = GS API
+dependancies[] = gsapi
+

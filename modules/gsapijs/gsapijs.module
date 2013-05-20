@@ -1,0 +1,117 @@
+<?php
+/**
+ * The drupal_json() function is broken in D6 and will never be fixed. See:
+ * http://drupal.org/node/840800
+ *
+ * So we created a custom function that properly encodes the string and sets
+ * the header for json.
+ */
+function gsapijs_json($var) {
+  drupal_set_header('Content-Type: application/json; charset=utf-8');
+  // json_encode() does not escape <, > and &, so we do it with str_replace().
+  print str_replace(array('<', '>', '&'), array('\\u003c', '\\u003e', '\\u0026'), json_encode($var));
+}
+
+/**
+ * Implements hook_menu.
+ */
+function gsapijs_menu() {
+  $items['gsapijs/request/%/%'] = array(
+    'title' => t('LMS API'),
+    'page callback' => 'gsapijs_convert',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+   );
+
+  return $items;
+}
+
+/**
+ * Page callback for /gsapijs/request/[service]/[rid]||[pid]
+ *
+ * @args service string
+ *   The srvice to call. Valid Options:
+ *     - `grd` (Get Recipe Details)
+ *     - `grpc` (Get Recipe Promotion Count).
+ *     - `aip` (Add Item Promotion)
+ *     - `rip` (Remove Item Promotion)
+ *     - `gsl` (Get Shopping List)
+ *
+ * @args rid integer
+ *   The internal ID of the recipe. Usually the Drupal Node ID.
+ *
+ * @Return json encoded array representing the recipe or the promotion count
+ *   for the recipe.
+ *
+ * All return values depend on the return value of gsapi_zip().
+ */
+function gsapijs_convert() {
+  $contents = array('error');
+
+  // Get Recipe Details
+  if (arg(2) == 'grd') {
+    if (is_numeric(arg(3))) {
+      $contents = gsapi_grd(arg(3));
+    }
+    else {
+      $contents = array('Non-numeric recipe ID provided');
+    }
+  }
+
+  // Get Recipe Promotion Count
+  if (arg(2) == 'grpc') {
+    if (is_numeric(arg(3))) {
+      $contents = gsapi_grpc(arg(3));
+    }
+    else {
+      $contents = array('Non-numeric recipe ID provided');
+    }
+  }
+
+  // Add Item Promotion
+  if (arg(2) == 'aip') {
+    if (is_numeric(arg(3))) {
+      $contents = gsapi_request('addItemPromotion', arg(3));
+    }
+    else {
+      $contents = array('Non-numeric Promotion ID provided');
+    }
+  }
+
+  // Remove Item Promotion
+  if (arg(2) == 'rip') {
+    if (is_numeric(arg(3))) {
+      $contents = gsapi_request('removePromotionsFromShoppingLists', arg(3));
+    }
+    else {
+      $contents = array('Non-numeric Promotion ID provided');
+    }
+  }
+
+  // Get Shopping List
+  if (arg(2) == 'gsl') {
+    // This service is unique in that it does not take a second argument.
+    // However, the page would return a 404 unless we were to create a separate
+    // menu item for this sevice. So just pass *something*. E.g.
+    // /gsapijs/request/gsl/list.
+    $contents = gsapi_request('getShoppingListByExternalId');
+  }
+
+  return gsapijs_json($contents);
+}
+
+/**
+ * Adds the recipe details response to the Drupal.settings global array when
+ * on a recipe node.
+ */
+function gsapijs_init() {
+  if ((arg(0) == 'node') && (is_numeric(arg(1)))) {
+    $node = menu_get_object();
+    if ($node->type == 'story') {
+      $recipe_details = gsapi_grd('1954');
+      $recipe_details = $recipe_details->GetRecipesPromotionResponse->recipes[0];
+      drupal_add_js(array('gsapijs' => array('recipe_details' => $recipe_details)), 'setting');
+    }
+  }
+  drupal_add_js(drupal_get_path('module', 'gsapijs') . '/includes/gsapijs.js');
+}
