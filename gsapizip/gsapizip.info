@@ -1,7 +1,0 @@
-name = Grocery Server API Zip Block
-description = Provides a block that allows users to update their zip code.
-core = 6.x
-
-package = GS API
-dependencies[] = gsapi
-

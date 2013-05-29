@@ -18,5 +18,5 @@ function gsapitest_menu() {
 
 
 function gsapitest_test() {
-  return drupal_get_form('gsapitest_grd_form') . drupal_get_form('gsapitest_grpc_form') . drupal_get_form('gsapitest_aip_form') . drupal_get_form('gsapitest_rip_form') . drupal_get_form('gsapitest_gsl_form');
+  return drupal_get_form('gsapitest_grd_form') . drupal_get_form('gsapitest_grpc_form') . drupal_get_form('gsapitest_gipc_form') . drupal_get_form('gsapitest_aip_form') . drupal_get_form('gsapitest_rip_form') . drupal_get_form('gsapitest_gsl_form');
 }

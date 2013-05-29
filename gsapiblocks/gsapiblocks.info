@@ -1,0 +1,8 @@
+name = Grocery Server API Blocks
+description = Provides GS API blocks (Zip Update and Shopping List).
+core = 6.x
+
+package = GS API
+dependencies[] = gsapi
+dependencies[] = gsapijs
+

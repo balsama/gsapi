@@ -34,7 +34,23 @@ Functions
 > Usually the Drupal Node ID.
 
 *Return: integer*  
-> The number of current promotions for the provided Recipe ID.
+> The number of current promotions for the provided Recipe ID. Returns
+> non-boolean `0` for no results.
+
+###Get Item Promotion Count###
+
+    gsapi_gipc($rid, $delta)
+
+*Parameter: $rid integer*
+> Recipe ID as defined in the XML document provided to Grocery Server.
+> Usually the Drupal Node ID.
+
+*Parameter: $delta integer*
+> Line Item of ingredient (first ingredient = `0`)
+
+*Return: integer*
+> The number of current promotions for the item. Returns non-boolean `0` for no
+> results.
 
 ###Grocery Server Request###
 
@@ -114,7 +130,7 @@ The wrappers fall into two categories:
 
 ###Local page that delivers json###
 
-    /gsapijs/request/[service]/[rid]||[pid]
+    /gsapijs/request/[service]/[rid]||[pid]||[[rid]|[delta]]
 
 *Argument 2: service; allowed values:*
 
@@ -125,6 +141,10 @@ The wrappers fall into two categories:
 
 * `grpc` (Get Recipe Promotion Count).
   > Requires `rid` (Recipe ID) as `arg(3)`. Drupal Node ID of recipe.
+
+* `gipc` (Get Item Promotion Count)
+  > Requires a combination of `rid` (Recipe ID) and `delta` seperated by a
+  > pipe as arg(3). E.g.: `[[rid]|[delta]]
 
 * `aip` (Add Item Promotion)
   > Requires `pid` (Promotion ID) as `arg(3).` GS internal ID of a promotion.  
@@ -150,7 +170,7 @@ The wrappers fall into two categories:
 *Param int Promotion ID*
 > The promotion ID returned from the Get Recipe Details call.
 
-###Additions to the `Drupal.settings` array###
+###Additions to the Drupal.settings array###
 
     Drupal.settings.gsapijs.recipe_details
 

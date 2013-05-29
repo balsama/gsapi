@@ -1,0 +1,85 @@
+<?php
+/**
+ * Implements hook_block().
+ *
+ * Block provides a form which allows users to override the zip code detected
+ * by GS API.
+ */
+function gsapiblocks_block($op = 'list', $delta = 0, $edit = array()) {
+  if ($op == 'list') {
+    $block['gsapiblocks_zip'] = array(
+      'info' => 'GSAPI Zip',
+    );
+
+    $block['gsapiblocks_sl'] = array(
+      'info' => 'GSAPI Shopping List',
+    );
+
+    return $block;
+  }
+
+  elseif ($op == 'view') {
+    switch ($delta) {
+      case 'gsapiblocks_zip' :
+        $block['content'] = drupal_get_form('gsapiblocks_form');
+        break;
+
+      case 'gsapiblocks_sl' :
+        $block['title'] = 'Shopping List';
+        $block['content'] = gsapiblocks_sl();
+        break;
+    }
+    return $block;
+  }
+}
+
+/**
+ * Zip Code Form for the block.
+ */
+function gsapiblocks_form() {
+  $form['gsapiblocks_zip'] = array(
+    '#type' => 'textfield',
+    '#default_value' => gsapi_zip(),
+    '#size' => 5,
+    '#maxlength' => 5,
+    '#required' => TRUE,
+  );
+
+  $form['gsapiblocks_submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Submit',
+  );
+
+  return $form;
+}
+
+/**
+ * Validate that the zip is 5 digit numeric
+ */
+function gsapiblocks_form_validate($form, &$form_state) {
+  if (!preg_match('/^\d{5}$/', ($form['gsapiblocks_zip']['#value']))) {
+    form_error($form['gsapiblocks_zip'], t('Zip Code Field must contain a 5-digit numeric value'));
+  }
+}
+
+/**
+ * update the ZIP after validation passes (see gsapi.module for update zip
+ * function).
+ */
+function gsapiblocks_form_submit($form, &$form_state) {
+  gsapi_update_zip($form['gsapiblocks_zip']['#value']);
+}
+
+function gsapiblocks_sl() {
+  $shopping_list = gsapi_request('getShoppingListByExternalId');
+  return theme('gsapiblocks_sl_theme', $shopping_list);
+}
+
+function gsapiblocks_theme() {
+  return array(
+    'gsapiblocks_sl_theme' => array(
+      'arguments' => array('shopping_list' => null),
+      'template' => 'gsapiblocks_shopping_list',
+    ),
+  );
+}

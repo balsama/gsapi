@@ -122,11 +122,30 @@ function gsapi_grpc($recipe_id) {
 }
 
 /**
+ * Get Item Promotion Count
+ *
+ * @return integer
+ *   Number of promotions for a given recipe ingredient.
+ */
+function gsapi_gipc($recipe_id, $delta) {
+  $zip = gsapi_zip();
+  $data = gsapi_grd($recipe_id);
+  return count($data->GetRecipesPromotionResponse->recipes[0]->recipeIngredients[$delta]->specials);
+}
+
+/**
  * Universally Unique Ientifier.
  *
  * Generates (if necesarry) and returns a UUID for an anon site visitor.
+ *
+ * @param bool reset
+ *   If TRUE, force generates a new uuid for current user (effectively deleting
+ *   their current shopping list).
  */
-function gsapi_uuid() {
+function gsapi_uuid($reset = FALSE) {
+  if ($reset) {
+    setcookie('gsapi_uuid', '', 0, base_path());
+  }
   $uuid = $_COOKIE['gsapi_uuid'];
   if (empty($uuid)) {
     $uuid = user_password(16);

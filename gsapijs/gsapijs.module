@@ -30,9 +30,10 @@ function gsapijs_menu() {
  * Page callback for /gsapijs/request/[service]/[rid]||[pid]
  *
  * @args service string
- *   The srvice to call. Valid Options:
+ *   The service to call. Valid Options:
  *     - `grd` (Get Recipe Details)
- *     - `grpc` (Get Recipe Promotion Count).
+ *     - `grpc` (Get Recipe Promotion Count)
+ *     - `gipc` (Get Item Promotion Count - requires pid to include delta as: [rid]|[delta])
  *     - `aip` (Add Item Promotion)
  *     - `rip` (Remove Item Promotion)
  *     - `gsl` (Get Shopping List)
@@ -54,7 +55,7 @@ function gsapijs_convert() {
       $contents = gsapi_grd(arg(3));
     }
     else {
-      $contents = array('Non-numeric recipe ID provided');
+      $contents = array('Non-numeric recipe ID provided.');
     }
   }
 
@@ -64,7 +65,22 @@ function gsapijs_convert() {
       $contents = gsapi_grpc(arg(3));
     }
     else {
-      $contents = array('Non-numeric recipe ID provided');
+      $contents = array('Non-numeric recipe ID provided.');
+    }
+  }
+
+  // Get Item Promotion Count
+  // Note that the item delta must be included in the pid argument along with
+  // the Recipe Id like this: [[rid]|[delta]]
+  if (arg(2) == 'gipc') {
+    $contents = arg(3);
+    $args = explode('|', arg(3));
+    array_filter($args, 'is_numeric');
+    if (count($args) == 2) {
+      $contents = gsapi_gipc($args[0], $args[1]);
+    }
+    else {
+      $contents = array('Non-numeric Recipe ID or Delta provided!!!');
     }
   }
 
@@ -74,7 +90,7 @@ function gsapijs_convert() {
       $contents = gsapi_request('addItemPromotion', arg(3));
     }
     else {
-      $contents = array('Non-numeric Promotion ID provided');
+      $contents = array('Non-numeric Promotion ID provided.');
     }
   }
 
@@ -84,7 +100,7 @@ function gsapijs_convert() {
       $contents = gsapi_request('removePromotionsFromShoppingLists', arg(3));
     }
     else {
-      $contents = array('Non-numeric Promotion ID provided');
+      $contents = array('Non-numeric Promotion ID provided.');
     }
   }
 
@@ -115,3 +131,4 @@ function gsapijs_init() {
   }
   drupal_add_js(drupal_get_path('module', 'gsapijs') . '/includes/gsapijs.js');
 }
+

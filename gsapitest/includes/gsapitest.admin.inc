@@ -33,7 +33,7 @@ function gsapitest_grpc_form() {
     '#type' => 'textfield',
     '#required' => TRUE,
     '#title' => 'Recipe ID',
-    '#description' => 'Enter the Drupal Node ID of the recipe',
+    '#description' => 'Enter the Drupal Node ID of the recipe.',
   );
 
   $form['gsapitest_grpc_form_submit'] = array(
@@ -45,6 +45,37 @@ function gsapitest_grpc_form() {
 }
 function gsapitest_grpc_form_submit($form, &$form_state) {
   dpm(gsapi_grpc($form['gsapitest_grpc_form_rid']['#value']));
+}
+
+/**
+ * Get Item Promotion Count
+ */
+function gsapitest_gipc_form() {
+  $form['gsapitest_gipc_form_heading']['#value'] = '<h2>Get Item Promotion Count</h2>';
+
+  $form['gsapitest_gipc_form_rid'] = array(
+    '#type' => 'textfield',
+    '#required' => TRUE,
+    '#title' => 'Recipe ID',
+    '#description' => 'Enter the Drupal Node ID of the recipe',
+  );
+
+  $form['gsapitest_gipc_form_delta'] = array(
+    '#type' => 'textfield',
+    '#required' => TRUE,
+    '#title' => 'Item Delta',
+    '#description' => 'Enter the delta (cardinal number) of ingredient.',
+  );
+
+  $form['gsapitest_gipc_form_submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Submit',
+  );
+
+  return $form;
+}
+function gsapitest_gipc_form_submit($form, &$form_state) {
+  dpm(gsapi_gipc($form['gsapitest_gipc_form_rid']['#value'], $form['gsapitest_gipc_form_delta']['#value']));
 }
 
 /**
