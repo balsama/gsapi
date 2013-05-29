@@ -3,6 +3,6 @@ description = Tests that GS API is configured and working correctly.
 core = 6.x
 
 package = GS API
-dependancies[] = gsapi
-dependancies[] = devel
+dependencies[] = gsapi
+dependencies[] = devel
 

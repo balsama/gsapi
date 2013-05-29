@@ -3,5 +3,5 @@ description = Provides a javascript wrapper to all php functions provided by thi
 core = 6.x
 
 package = GS API
-dependancies[] = gsapi
+dependencies[] = gsapi
 
