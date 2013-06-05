@@ -1,0 +1,87 @@
+<?php
+/**
+ * Loads the front-end javascript on recipe and recipe landing pages.
+ */
+function gsapife_init() {
+  // We're adding the Front-End JS file on all pages since users might interact
+  // with their shoppinglist even when they're not on a recipe page. Specific
+  // things that should only happen on recipe pages can make use of the
+  // presense (or absense) of the `Drupal.settings.gsapijs.rid` setting.
+  drupal_add_js(drupal_get_path('module', 'gsapife') . '/gsapife.js');
+  drupal_add_css(drupal_get_path('module', 'gsapife') . '/gsapife.css');
+
+  // If we're on a recipe node, load the jQuery UI tooltip JS too.
+  //@todo tooltip isn't avilable in our version of ui. Com up with a different.
+  if ((arg(0) == 'node') && (is_numeric(arg(1)))) {
+    $node = menu_get_object();
+    if ($node->type == 'recipe') {
+      jquery_ui_add('ui.qtip');
+    }
+  }
+}
+
+/**
+ * Create an API page to hit which will return the HTML for item promotions.
+ *
+ * arg(2) = type: The type to build. E.g. promotion list or shopping list.
+ */
+function gsapife_menu() {
+  $items['gsapife/build_html/%'] = array(
+    'title' => t('LMS API'),
+    'page callback' => 'gsapife_build_html',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+   );
+
+  return $items;
+}
+
+/**
+ * Page callback for /gaspife/build_html/%
+ *
+ * @return
+ *   The rendered HTML for the ingredirents promotions or the users Shopping
+ *   List.
+ */
+function gsapife_build_html() {
+  if (arg(2) == 'promotion') {
+    // Promotions require two parameters:
+    // @param int rid
+    //   The ID of the recipe
+    // @param int delta
+    //   The line item delta of the ingredient.
+    if ((is_numeric($_GET['rid'])) && (is_numeric($_GET['delta']))) {
+      $recipe = gsapi_grd($_GET['rid']);
+      $items = $recipe->GetRecipesPromotionResponse->recipes[0]->recipeIngredients[$_GET['delta']]->specials;
+    }
+    else {
+      print 'Invalid rid or delta.';
+      exit;
+    }
+    print theme('gsapife_build_html', $items);
+  }
+  elseif (arg(2) == 'sl') {
+    $shopping_list = gsapi_request('getShoppingListByExternalId');
+    if ($shopping_list->shoppingListResponse->count->itemCount == 0) {
+      print "<div class='empty-text view-empty'>You don't have anything in your Shopping List. Check out our recipes to find on-sale ingredients at your favorite local grocers.</div>";
+      exit;
+    }
+    print theme('gsapife_sl', $shopping_list);
+  }
+  else {
+    print 'unknown error';
+  }
+}
+
+function gsapife_theme() {
+  return array(
+    'gsapife_build_html' => array(
+      'arguments' => array('items' => null),
+      'template' => 'gsapife_list',
+    ),
+    'gsapife_sl' => array(
+      'arguments' => array('shopping_list' => null),
+      'template' => 'gsapife_sl',
+    ),
+  );
+}

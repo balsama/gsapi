@@ -1,0 +1,152 @@
+.views-field-field-recipe-image-fid {
+  overflow: hidden;
+  position: relative;
+}
+.view-homepage-popular .views-field-field-recipe-image-fid {float: left;} /* relic of some old css */
+
+.r-has-promos {
+  background-color: #ff0;
+  background: -moz-linear-gradient(top,  #fbed73 0%, #fed432 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fbed73), color-stop(100%,#fed432));
+  background: -webkit-linear-gradient(top,  #fbed73 0%,#fed432 100%);
+  background: -o-linear-gradient(top,  #fbed73 0%,#fed432 100%);
+  background: -ms-linear-gradient(top,  #fbed73 0%,#fed432 100%);
+  background: linear-gradient(to bottom,  #fbed73 0%,#fed432 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fbed73', endColorstr='#fed432',GradientType=0 );
+  color: #B4132D;
+  cursor: pointer;
+  font-size: 12px;
+  left: -46px;
+  line-height: 12px;
+  overflow: hidden;
+  padding: 10px 10px 1px;
+  position: absolute;
+  text-align: center;
+  top: -10px;
+  -webkit-transform: rotate(-45deg);
+  -moz-transform: rotate(-45deg);
+  -ms-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1.5);
+  width: 100px;
+}
+
+.featured-recipe .r-has-promos {
+  font-size: 16px;
+  line-height: 17px;
+  left: -40px;
+}
+
+/* Item Promo */
+.item-has-promos {
+  background-color: #fedf39;
+  background: #fbed73;
+  background: -moz-linear-gradient(top,  #fbed73 0%, #fed432 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fbed73), color-stop(100%,#fed432));
+  background: -webkit-linear-gradient(top,  #fbed73 0%,#fed432 100%);
+  background: -o-linear-gradient(top,  #fbed73 0%,#fed432 100%);
+  background: -ms-linear-gradient(top,  #fbed73 0%,#fed432 100%);
+  background: linear-gradient(to bottom,  #fbed73 0%,#fed432 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fbed73', endColorstr='#fed432',GradientType=0 );
+  border: 1px solid #ffd533;
+  color: #B4132D;
+  cursor: pointer;
+  display: inline-block;
+  font-weight: bold;
+  line-height: 16px;
+  margin-left: 4px;
+  padding: 1px 4px 0 4px;
+}
+
+/* absolutely position the gs logo since it's kind of squezed in there */
+.sl-print-gs-logo {
+  position: absolute;
+  right: -260px;
+  top: 9px;
+}
+
+/* We need to move the buttons on the list page down a little because we use hrs inconsistently */
+.sl-print-view a { margin-bottom: 10px; }
+
+/**
+ * Shopping List page
+ * 
+ * Does anyone else think it's weird that the only way to get to see this page
+ * is if you have more than 5 items on your list?
+ */
+.sl-print-view { margin: 0 24px; position: relative;}
+.sl-print-view a.sl-remove-all {
+  font-weight: bold;
+  position: absolute;
+  right: 18px;
+  top: 10px;
+}
+
+.sl-modal .ui-dialog-content .row { background-color: #fff;}
+
+.sl-modal .row,
+.shopping-list .row {
+  border-bottom: 1px solid #ccc;
+  margin: 12px;
+  position: relative;
+}
+.shopping-list .row.last { border-bottom: 0px;}
+.sl-modal .promo-item-image,
+.shopping-list .promo-item-image {
+  float:  left;
+  margin-right: 12px;
+  width: 100px;
+}
+.sl-modal .promo-item-image img,
+.shopping-list .promo-item-image img {
+  height: 100px;
+  width: 100px;
+}
+
+.sl-modal .ui-dialog-content .promo-item-title,
+.shopping-list .promo-item-title {
+  font-size: 18px;
+  font-weight: bold;
+  padding-top: 10px;
+}
+.shopping-list .promo-item-savings { padding: 6px 0 2px;}
+
+.shopping-list .rows .sl-print-sidebar,
+.shopping-list .rows .sl-view-full-list { display: none;}
+.shopping-list .view-empty { padding: 20px;}
+
+.sl-modal .ui-dialog-content .promo-item-restrictions,
+.promo-item-restrictions {
+  color: #aaa;
+  font-size: 90%;
+}
+
+/**
+ * Block overrides
+ */
+#block-gsapiblocks-gsapiblocks_sl .sl-print-view { margin: 18px 24px 0;}
+
+/**
+ * Modal window
+ */
+.sl-modal .ui-dialog-content div {
+  color: #000;
+  font-size: 14px;
+  font-weight: normal;
+  text-align: left;
+}
+
+.sl-modal .ui-dialog-content div.top { padding: 10px 10px 0;}
+
+.sl-modal .ui-dialog-content div.bottom { border: none;}
+
+.sl-modal .ui-dialog-container .button-push {
+  background-image: url(../includes/images/gs-logo.png); 
+  background-repeat: no-repeat;
+  background-position: 328px 34px;
+}
+
+.sl-modal .ui-dialog-container .add-to-sl { margin-bottom: 12px;}
+
+
+

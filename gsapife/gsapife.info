@@ -1,0 +1,10 @@
+name = Grocery Server API Front End
+description = Provides the front-end javascript and CSS that implements the GS API.
+core = 6.x
+
+package = GS API
+dependencies[] = gsapi
+dependencies[] = gsapijs
+dependencies[] = gsapiblocks
+
+

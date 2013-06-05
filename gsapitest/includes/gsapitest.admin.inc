@@ -24,7 +24,7 @@ function gsapitest_grd_form_submit($form, &$form_state) {
 }
 
 /**
- * Get Recipe Promotion Count
+ * Get Recipe Promotion Count (Internal API)
  */
 function gsapitest_grpc_form() {
   $form['gsapitest_grpc_form_heading']['#value'] = '<h2>Get Recipe Promotion Count</h2>';
@@ -45,6 +45,30 @@ function gsapitest_grpc_form() {
 }
 function gsapitest_grpc_form_submit($form, &$form_state) {
   dpm(gsapi_grpc($form['gsapitest_grpc_form_rid']['#value']));
+}
+
+/**
+ * Get Promotion Count For Recipe (GS API Function)
+ */
+function gsapitest_gpcfr_form() {
+  $form['gsapitest_gpcfr_form_heading']['#value'] = '<h2>Get Recipe Promotion Count (External)</h2>';
+
+  $form['gsapitest_gpcfr_form_rid'] = array(
+    '#type' => 'textfield',
+    '#required' => TRUE,
+    '#title' => 'Recipe ID',
+    '#description' => 'Enter the Drupal Node ID of the recipe.',
+  );
+
+  $form['gsapitest_gpcfr_form_submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Submit',
+  );
+
+  return $form;
+}
+function gsapitest_gpcfr_form_submit($form, &$form_state) {
+  dpm(gsapi_request('getPromotionCountForRecipe', $form['gsapitest_gpcfr_form_rid']['#value']));
 }
 
 /**

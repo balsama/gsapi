@@ -80,7 +80,7 @@ function gsapijs_convert() {
       $contents = gsapi_gipc($args[0], $args[1]);
     }
     else {
-      $contents = array('Non-numeric Recipe ID or Delta provided!!!');
+      $contents = array('Non-numeric Recipe ID or Delta provided!');
     }
   }
 
@@ -126,7 +126,7 @@ function gsapijs_init() {
     if ($node->type == 'recipe') {
       $recipe_details = gsapi_grd($node->nid);
       $recipe_details = $recipe_details->GetRecipesPromotionResponse->recipes[0];
-      drupal_add_js(array('gsapijs' => array('recipe_details' => $recipe_details)), 'setting');
+      drupal_add_js(array('gsapijs' => array('recipe_details' => $recipe_details, 'rid' => arg(1))), 'setting');
     }
   }
   drupal_add_js(drupal_get_path('module', 'gsapijs') . '/includes/gsapijs.js');

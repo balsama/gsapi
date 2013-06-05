@@ -124,9 +124,10 @@ Javascript Wrapper
 The GS API JS module provides javascript wrappers to most of these functions.
 The wrappers fall into two categories:
 
-1. Local page that delivers json
+1. Local page that delivers json.
 2. Wrapper functions for adding and removing items from a user's Shopping List
-3. As additions to the `Drupal.settings` array
+   and various ingredient/promotion functions.
+3. As additions to the `Drupal.settings` object.
 
 ###Local page that delivers json###
 
@@ -160,15 +161,25 @@ The wrappers fall into two categories:
   > Does not use `arg(3)` but due to Drupal's menu system, you will need to
   > pass something as a placeholder.
 
-###Wrapper function for adding and removing Promotions from Shopping Lists###
+###Wrapper function for adding and removing Promotions from Shopping Lists and various other functions.###
 
-    gsapijs_sl_promotion(op, pid)
+    gsapijs(op, pid)
 
 *Param string op*
 > Either `aip` or `rip` (Add/Remove Item Promotion respectively).
 
 *Param int Promotion ID*
 > The promotion ID returned from the Get Recipe Details call.
+
+**Get Item Promotion Count - Local**
+
+    gsapijs_gipc_local(delta)
+
+> This function should be used in place of the identical
+> `gsapijs('gipc', delta)` function when being called from a recipe node. It
+> uses the preloaded information from the `Drupal.settings` object and is
+> therefore muchmore effecient.
+
 
 ###Additions to the Drupal.settings array###
 

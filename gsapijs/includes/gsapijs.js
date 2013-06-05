@@ -17,6 +17,9 @@
  * @return object
  *   Object representing users' current Shopping Cart after the Add or Remove
  *   was completed.
+ *
+ * @NOTE Use this method sparingly and only when appropriate. This function is
+ *       NOT asyncronous.
  */
 function gsapijs(op, args) {
   var result = null;
@@ -28,8 +31,25 @@ function gsapijs(op, args) {
                   // was populated
     success: function(data) {
       result = data;
+      if ((op == 'aip') || (op == 'rip')) {
+        gsapife_update_sl();
+      }
     }
   });
   return result;
 }
 
+/**
+ * Service to return promotion count bt ingredient when recipe details are
+ * available in the `Drupal.settings` object. That is, when you are already on
+ * a recipe node.
+ *
+ * @param int delta
+ *   The line item of the ingredient (first ingredient = `0`)
+ */
+function gsapijs_gipc_local(delta) {
+  if (typeof Drupal.settings.gsapijs.recipe_details.recipeIngredients[delta].specials != 'undefined') {
+    return Drupal.settings.gsapijs.recipe_details.recipeIngredients[delta].specials.length;
+  }
+  return 0;
+}

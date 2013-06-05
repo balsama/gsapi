@@ -72,7 +72,7 @@ function gsapi_services_details($requested, $args = null) {
       }
       break;
 
-    case 'getRecipeDetails':
+    case 'getRecipeDetails' :
       $url = array(
         $url_base,
         'recipe',
@@ -95,6 +95,29 @@ function gsapi_services_details($requested, $args = null) {
         'url' => implode('/', $url),
       );
       $service['args']['GetRecipeDetailsRequest']['externalIdList'][] = $args;
+      break;
+
+    case 'getPromotionCountForRecipe' :
+      $url = array(
+        $url_base,
+        'grocery',
+        'rest',
+        $api_version,
+        'getPromotionCountForRecipe',
+        $client_id,
+        $api_key,
+      );
+      $service = array(
+        'method' => 'POST',
+        'args' => array(
+          'PromotionCountForRecipeRequest' => array(
+          ),
+        ),
+        'url' => implode('/', $url),
+      );
+      $service['args']['PromotionCountForRecipeRequest']['externalId'] = '1954';//$args[0];
+      $service['args']['PromotionCountForRecipeRequest']['sourceId'] = '283034';//$args[0];
+      $service['args']['PromotionCountForRecipeRequest']['zipCode'] = gsapi_zip();
       break;
 
     case 'addItemPromotion' :

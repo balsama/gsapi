@@ -21,6 +21,15 @@ function gsapi_menu() {
     'weight' => 1,
   );
 
+  // View shopping list page
+  $items['gsapi/sl-view'] = array(
+    'title' => 'View Shopping List',
+    'description' => 'View Your Complete Shopping List.',
+    'page callback' => 'gsapi_slv',
+    'access arguments' => array('access content'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
   return $items;
 }
 
@@ -109,7 +118,7 @@ function gsapi_grd($recipe_id, $reset = FALSE) {
 }
 
 /**
- * Grocery Server API - Get Recipe Promotion Count
+ * Get Recipe Promotion Count
  *
  * @return integer
  *   Number of items within the given recipe for which there are promotions
@@ -118,7 +127,7 @@ function gsapi_grd($recipe_id, $reset = FALSE) {
 function gsapi_grpc($recipe_id) {
   $zip = gsapi_zip();
   $data = gsapi_grd($recipe_id);
-  return $data->GetRecipesPromotionResponse->recipes[0]->promotionCount;
+  return $data->GetRecipesPromotionResponse->recipes[0]->salesIngredientNumber;
 }
 
 /**
@@ -131,6 +140,17 @@ function gsapi_gipc($recipe_id, $delta) {
   $zip = gsapi_zip();
   $data = gsapi_grd($recipe_id);
   return count($data->GetRecipesPromotionResponse->recipes[0]->recipeIngredients[$delta]->specials);
+}
+
+/**
+ * Get Shopping List Item Count
+ *
+ * @return
+ *   Number of items in current user's shopping list.
+ */
+function gsapi_gslic() {
+  $sl = gsapi_request('getShoppingListByExternalId');
+  return $sl->shoppingListResponse->count->itemCount;
 }
 
 /**
@@ -148,7 +168,7 @@ function gsapi_uuid($reset = FALSE) {
   }
   $uuid = $_COOKIE['gsapi_uuid'];
   if (empty($uuid)) {
-    $uuid = user_password(16);
+    $uuid = user_password(32);
     setcookie('gsapi_uuid', $uuid, 0, base_path());
   }
   return $uuid;
@@ -191,4 +211,27 @@ function gsapi_ip_address() {
   }
 
   return $ip_address;
+}
+
+/**
+ * Page callback function for Shopping List View Page
+ */
+function gsapi_slv() {
+  if ($_GET['reset']) {
+    gsapi_uuid(TRUE);
+  }
+  drupal_add_css(drupal_get_path('module', 'gsapi') . '/gsapi.print.css', 'module', 'print');
+  $shopping_list = gsapi_request('getShoppingListByExternalId');
+  if ($shopping_list->shoppingListResponse->count->itemCount == 0) {
+    return "<div class='empty-text view-empty'>You don't have anything in your Shopping List. Check out our recipes to find on-sale ingredients at your favorite local grocers.</div>";
+  }
+  return theme('gsapi_shopping_list', $shopping_list);
+}
+function gsapi_theme() {
+  return array(
+    'gsapi_shopping_list' => array(
+      'arguments' => array('shopping_list' => null),
+      'template' => 'gsapi_shopping_list',
+    ),
+  );
 }
